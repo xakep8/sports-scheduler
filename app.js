@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-// const { Todo,User } = require("./models");
+const { Sports,User } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 var csurf = require("tiny-csrf");
@@ -98,7 +98,7 @@ app.post("/adminusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/");
+      response.redirect("/admin");
     });
   }
   catch(error){
@@ -134,7 +134,7 @@ app.post("/playingusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/");
+      response.redirect("/player");
     });
   }
   catch(error){
@@ -183,5 +183,51 @@ function requireAdmin(req, res, next) {
     res.status(401).json({ message: 'Unauthorized user.' });
   }
 }
+
+app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>{
+  request.logout((err)=>{
+    if(err){
+      return next(err);
+    }
+    response.redirect("/");
+  });
+});
+
+app.post("/session",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}) ,(request,response)=>{
+  response.redirect("/todos");
+});
+
+app.get("/admin",requireAdmin,async (request,response)=>{
+  console.log(request.user.id);
+  const acc=await User.findByPk(request.user.id);
+  const userName=acc.firstName+" "+acc.lastName;
+  if (request.accepts("html")) {
+    response.render("home",{
+        userName,
+        csrfToken: request.csrfToken(),
+    });
+  } else {
+    response.json({
+      userName,
+    });
+  }
+});
+
+app.get("/player",connectEnsureLogin.ensureLoggedIn(),async ()=>{
+  console.log(request.user.id);
+  const acc=await User.findByPk(request.user.id);
+  const userName=acc.firstName+" "+acc.lastName;
+  if (request.accepts("html")) {
+    response.render("home",{
+        
+        userName,
+        csrfToken: request.csrfToken(),
+    });
+  } else {
+    response.json({
+      userName,
+    });
+  }
+});
 
 module.exports =app;
