@@ -13,17 +13,9 @@
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <%- include("header.ejs") %>
-            <h6 class="py-4">Signup as a new user</h6>
-            <form action="/adminusers" method="post">
+            <h6 class="py-4">Login to your account</h6>
+            <form action="/playersession" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <div class="py-3">
-                    <label for="firstName">First Name:</label>
-                    <input type="text" name="firstName" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
-                </div>
-                <div class="py-3">
-                    <label for="lastName">Last Name:</label>
-                    <input type="text" name="lastName" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
-                </div>
                 <div class="py-3">
                     <label for="email">Email:</label>
                     <input type="email" name="email" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
@@ -33,12 +25,11 @@
                     <input type="password" name="password" class="border border-gray-300 text-gray-900 rounded p-2 w-full">
                 </div>
                 <div class="py-3">
-                    <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Sign up</button>
+                    <button type="submit" class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Sign in</button>
                 </div>
             </form>
-            <p>Already a register User? <a href="/signin" class="text-green-600">Sign in</a></p>
-            <p>Wanna return to Signup? <a href="/signup" class="text-green-600">Sign up</a></p>
-            <%- include("notifications.ejs") %>
+            <p>Don't have an account yet? <a href="/signup" class="text-green-600">Sign up</a></p>
+            <%-include("notifications.ejs")%>
         </div>
     </div>
 </body>

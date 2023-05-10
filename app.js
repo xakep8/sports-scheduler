@@ -184,6 +184,14 @@ function requireAdmin(req, res, next) {
   }
 }
 
+function requirePlayer(req, res, next) {
+  if (req.user && req.user.role === 'player') {
+    return next();
+  } else {
+    res.status(401).json({ message: 'Unauthorized user.' });
+  }
+}
+
 app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>{
   request.logout((err)=>{
     if(err){
@@ -193,8 +201,12 @@ app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>
   });
 });
 
-app.post("/session",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}) ,(request,response)=>{
-  response.redirect("/todos");
+app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}),requireAdmin ,(request,response)=>{
+  response.redirect("/admin");
+});
+
+app.post("/playersession",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}) ,(request,response)=>{
+  response.redirect("/player");
 });
 
 app.get("/admin",requireAdmin,async (request,response)=>{
@@ -213,13 +225,25 @@ app.get("/admin",requireAdmin,async (request,response)=>{
   }
 });
 
-app.get("/player",connectEnsureLogin.ensureLoggedIn(),async ()=>{
+app.get("/signin",(request,response)=>{
+  response.render("signin",{title:"Signin",csrfToken:request.csrfToken()});
+});
+
+app.get("/signin/admin",(request,response)=>{
+  response.render("admin-signin",{title:"Admin Signin",csrfToken:request.csrfToken()});
+});
+
+app.get("/signin/player",(request,response)=>{
+  response.render("player-signin",{title:"Admin Signin",csrfToken:request.csrfToken()});
+});
+
+
+app.get("/player",requirePlayer,async ()=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
   const userName=acc.firstName+" "+acc.lastName;
   if (request.accepts("html")) {
     response.render("home",{
-        
         userName,
         csrfToken: request.csrfToken(),
     });
