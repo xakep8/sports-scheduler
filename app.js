@@ -98,7 +98,7 @@ app.post("/adminusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/todos");
+      response.redirect("/");
     });
   }
   catch(error){
@@ -134,7 +134,7 @@ app.post("/playingusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/todos");
+      response.redirect("/");
     });
   }
   catch(error){
