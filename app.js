@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const { Sports,User,Sportnames } = require("./models");
+const { Sports,User,Sportname } = require("./models");
 const bodyParser = require("body-parser");
 const path = require("path");
 var csurf = require("tiny-csrf");
@@ -213,12 +213,14 @@ app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signi
 app.get("/admin",requireAdmin,async (request,response)=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
+  const sportslist=await Sportname.findAll();
   const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
   if (request.accepts("html")) {
     response.render("home",{
         userName,
         role,
+        sportslist,
         csrfToken: request.csrfToken(),
     });
   } else {
@@ -243,6 +245,7 @@ app.get("/signin/player",(request,response)=>{
 
 app.get("/player",requirePlayer,async (request,response)=>{
   console.log(request.user.id);
+  const sportslist=await Sportname.findAll({});
   const acc=await User.findByPk(request.user.id);
   const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
@@ -252,6 +255,7 @@ app.get("/player",requirePlayer,async (request,response)=>{
         userName,
         role,
         sports,
+        sportslist,
         csrfToken: request.csrfToken(),
     });
   } else {
@@ -275,10 +279,10 @@ app.get("/createsport",requireAdmin,(request,response)=>{
   response.render("createsport",{title:"Create Sport",csrfToken:request.csrfToken()});
 });
 
-app.post("/addsport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+app.post("/addsport",requireAdmin,async (request,response)=>{
   const title=request.body.title;
-  Sportnames.create({title:title});
-  response.redirect("/createsport",{sportname:title});
+  Sportname.create({title:title});
+  response.redirect("/admin");
 });
 
 module.exports =app;

@@ -68,7 +68,15 @@
             <br>
             <h1 class="p-2 text-2xl underline">Available Sports</h1><br>
             <div>
-
+                <ul class="list-none">
+                    <%for(var i=0;i<sportslist.length; i++) {%>
+                    <li>
+                        <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= sportslist[i].title %></label>
+                        </div>
+                    </li>
+                    <%} %>
+                </ul>
             </div>
             <%-include("notifications.ejs")%>
         </div>
