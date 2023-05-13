@@ -17,8 +17,9 @@ module.exports = (sequelize, DataTypes) => {
     title: DataTypes.STRING,
     date: DataTypes.DATEONLY,
     time:DataTypes.TIME,
-    players: DataTypes.INTEGER,
-    user:DataTypes.INTEGER,
+    players: DataTypes.STRING,
+    location: DataTypes.STRING,
+    additional:DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'Sports',
