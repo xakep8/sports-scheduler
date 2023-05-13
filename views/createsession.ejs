@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="<%= csrfToken%>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        function updateTodo(id,comp){
+            fetch(`/todos/${id}`,{
+                method:"put",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    completed:comp,
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((err)=>console.log(err));
+        }
+        function deleteTodo(id){
+            fetch(`/todos/${id}`,{
+                method:"delete",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((error)=>console.log(error));
+        }
+    </script>
+    <title><%=title%></title>
+</head>
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <h1 class="p-2 text-4xl">Create a new session for <%=sport%></h1>
+            <form action="/addsession" method="post">
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <div class="flex flex-col gap-5 py-10">
+                    <div class="flex-auto">
+                        <label>When will the session be held?</label>
+                        <input type="date" name="date" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                    </div>
+                    <div class="flex-auto">
+                        <label>What time will the session be held?</label>
+                        <input type="time" name="time" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                    </div>
+                    <div class="flex-auto">
+                        <label>Where will the session be held?</label>
+                        <input type="text" name="location" placeholder="What's next?" class="border border-gray-300 text-gray-900 w-full rounded p-2 text-sm"/>
+                    </div>
+                    <div class="flex-auto">
+                        <label>Who will be joining the session?</label>
+                        <input type="text" name="players" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                    </div>
+                    <div class="flex-auto">
+                        <label>How many more players do you need?</label>
+                        <input type="number" name="additional" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                    </div>
+                    <div class="flex-auto">
+                        <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2">Add</button>
+                    </div>
+                </div>
+            </form>
+            <div>
+            </div>
+            <%-include("notifications.ejs")%>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="<%= csrfToken%>">
+    <meta name="role" content="<%= role%>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        var role=document.querySelector('meta[name="role"]').getAttribute("content");
+        function updateTodo(id,comp){
+            fetch(`/todos/${id}`,{
+                method:"put",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    completed:comp,
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((err)=>console.log(err));
+        }
+        function deleteTodo(id){
+            fetch(`/todos/${id}`,{
+                method:"delete",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((error)=>console.log(error));
+        }
+        function control(){
+            if(role!='admin'){
+                document.getElementById('admin-controls').style.display='none';
+            }
+        }
+    </script>
+    <title>Sports-Scheduler</title>
+</head>
+<body onload="control()">
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <form action="/signout" method="get">
+                <div class="inline-flex">
+                    <h1 class="p-2 text-4xl">Welcome <%=userName%>!</h1>
+                    <button type="submit" class="bg-green-600 text-white px-5 py-1.5 rounded font-medium mr-2 mb-2 absolute start-2/3">Sign out</button>
+                </div>
+            </form>
+            <br>
+            <div id="admin-controls">
+                <a href="/create" class="text-green-600 p-2">Create a new sport</a><br>
+                <a href="/reports" class="text-green-600 p-2">View reports</a>
+            </div>
+            <br>
+            <h1 class="p-2 text-2xl underline">You're upcoming sessions</h1><br>
+            <div>
+
+            </div>
+            <br>
+            <h1 class="p-2 text-2xl underline">Available Sports</h1><br>
+            <div>
+
+            </div>
+            <%-include("notifications.ejs")%>
+        </div>
+    </div>
+</body>
+</html>

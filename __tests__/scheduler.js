@@ -34,20 +34,33 @@ describe("Sports-Scheduler Application", function () {
     }
   });
 
-  test("This is an empty test",()=>{
-    expect(true).toBe(true);
+  // test("This is an empty test",()=>{
+  //   expect(true).toBe(true);
+  // });
+
+  test("To check the admin signup function", async ()=>{
+    let res=await agent.get("/signup/admin");
+    const csrfToken=extractCsrfToken(res);
+    res=await agent.post("/adminusers").send({
+      firstName:"Test",
+      lastName: "User A",
+      email: "usera@test.com",
+      password:"helloworld",
+      _csrf: csrfToken,
+    });
+    expect(res.statusCode).toBe(302);
   });
 
-//   test("To check the signup function", async ()=>{
-//     let res=await agent.get("/signup");
-//     const csrfToken=extractCsrfToken(res);
-//     res=await agent.post("/users").send({
-//       firstName:"Test",
-//       lastName: "User A",
-//       email: "usera@test.com",
-//       password:"helloworld",
-//       _csrf: csrfToken,
-//     });
-//     expect(res.statusCode).toBe(302);
-//   });
+  test("To check the player signup function", async ()=>{
+    let res=await agent.get("/signup/player");
+    const csrfToken=extractCsrfToken(res);
+    res=await agent.post("/playingusers").send({
+      firstName:"Test",
+      lastName: "User A",
+      email: "usera@test.com",
+      password:"helloworld",
+      _csrf: csrfToken,
+    });
+    expect(res.statusCode).toBe(302);
+  });
 });

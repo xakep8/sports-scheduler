@@ -37,6 +37,14 @@ module.exports = {
           notNull:true,
         }
       },
+      location:{
+        type: Sequelize.STRING,
+        allowNull:false,
+        validate:{
+          notNull:true,
+        }
+      },
+      
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

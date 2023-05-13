@@ -201,21 +201,23 @@ app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>
   });
 });
 
-app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}),requireAdmin ,(request,response)=>{
+app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requireAdmin ,(request,response)=>{
   response.redirect("/admin");
 });
 
-app.post("/playersession",passport.authenticate('local',{failureRedirect:'/login',failureFlash:true,}) ,(request,response)=>{
+app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requirePlayer ,(request,response)=>{
   response.redirect("/player");
 });
 
 app.get("/admin",requireAdmin,async (request,response)=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
+  const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
   if (request.accepts("html")) {
     response.render("home",{
         userName,
+        role,
         csrfToken: request.csrfToken(),
     });
   } else {
@@ -234,17 +236,21 @@ app.get("/signin/admin",(request,response)=>{
 });
 
 app.get("/signin/player",(request,response)=>{
-  response.render("player-signin",{title:"Admin Signin",csrfToken:request.csrfToken()});
+  response.render("player-signin",{title:"Player Signin",csrfToken:request.csrfToken()});
 });
 
 
-app.get("/player",requirePlayer,async ()=>{
+app.get("/player",requirePlayer,async (request,response)=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
+  const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
+  const sports=Sports.findAll({where:{id:request.user.id}});
   if (request.accepts("html")) {
     response.render("home",{
         userName,
+        role,
+        sports,
         csrfToken: request.csrfToken(),
     });
   } else {
@@ -254,4 +260,13 @@ app.get("/player",requirePlayer,async ()=>{
   }
 });
 
+app.get("/createsession",(request,response)=>{
+  // console.log(request.user.id);
+  // const sport=request.sport.title;
+  response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken()});
+});
+
+app.post("/addsession",(request,response)=>{
+
+});
 module.exports =app;
