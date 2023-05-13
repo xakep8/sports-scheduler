@@ -42,10 +42,10 @@
 <body>
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
-            <h1 class="p-2 text-4xl">Create a new session for <%=sport%></h1>
+            <h1 class="p-2 text-4xl">Create a new session</h1>
             <form action="/addsession" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
-                <div class="flex flex-col gap-5 py-10">
+                <div class="flex flex-col gap-5 py-10 p-2">
                     <div class="flex-auto">
                         <label>When will the session be held?</label>
                         <input type="date" name="date" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>

@@ -266,7 +266,7 @@ app.get("/createsession",(request,response)=>{
   response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken()});
 });
 
-app.post("/addsession",(request,response)=>{
-
+app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
+  
 });
 module.exports =app;

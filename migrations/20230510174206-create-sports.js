@@ -31,11 +31,7 @@ module.exports = {
         }
       },
       players: {
-        type: Sequelize.INTEGER,
-        allowNull:false,
-        validate:{
-          notNull:true,
-        }
+        type: Sequelize.STRING,
       },
       location:{
         type: Sequelize.STRING,
@@ -44,7 +40,13 @@ module.exports = {
           notNull:true,
         }
       },
-      
+      additional:{
+        type: Sequelize.INTEGER,
+        allowNull:false,
+        validate:{
+          notNull:true,
+        }
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE
