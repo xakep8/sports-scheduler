@@ -260,13 +260,18 @@ app.get("/player",requirePlayer,async (request,response)=>{
   }
 });
 
-app.get("/createsession",(request,response)=>{
+app.get("/createsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
   // console.log(request.user.id);
   // const sport=request.sport.title;
   response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken()});
 });
 
 app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
-  
+
 });
+
+app.get("/createsport",requireAdmin,(request,response)=>{
+  response.render("createsport",{title:"Create Sport",csrfToken:request.csrfToken()});
+});
+
 module.exports =app;
