@@ -259,7 +259,7 @@ app.get("/createsport",requireAdmin,(request,response)=>{
 app.post("/addsport",requireAdmin,async (request,response)=>{
   const title=request.body.title;
   Sportname.create({title:title});
-  response.redirect("/admin");
+  response.redirect("/home");
 });
 
 app.get("/sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
