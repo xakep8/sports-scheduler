@@ -36,18 +36,29 @@
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <h1 class="p-2 text-4xl" id="name"><%=sport%></h1><br>
-            <h1 class="p-2 text-2xl underline">Sessions</h1><br>
+            <h1 class="p-2 text-2xl underline">Sessions</h1>
             <div>
                 <ul class="list-none">
+                    <%if(ses.length==null){%>
+                        <li>
+                            <p class="p-2 text-lg">There are no sessions available, wanna create one?</p>
+                        </li>
+                    <%} else{%>
                     <%for(var i=0;i<ses.length; i++) {%>
                     <li>
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
                             <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= ses[i].title %></label>
                         </div>
                     </li>
-                    <%} %>
+                    <%} }%>
                 </ul>
+                <div class="flex flex-col">
+                    <a href="/createsession" class="text-green-600 p-2 underline">Create Session</a>
+                    <a href="/reports" class="text-green-600 p-2 underline">View Report</a>
+                </div>
             </div>
+            <br>
+            <a href='/home' class="text-green-600">Return to home page</a>
             <%-include("notifications.ejs")%>
         </div>
     </div>

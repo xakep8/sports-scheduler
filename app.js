@@ -99,7 +99,7 @@ app.post("/adminusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/admin");
+      response.redirect("/home");
     });
   }
   catch(error){
@@ -135,7 +135,7 @@ app.post("/playingusers",async (request,response)=>{
       if(err){
         console.log(err);
       }
-      response.redirect("/player");
+      response.redirect("/home");
     });
   }
   catch(error){
@@ -203,14 +203,14 @@ app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>
 });
 
 app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requireAdmin ,(request,response)=>{
-  response.redirect("/admin");
+  response.redirect("/home");
 });
 
 app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requirePlayer ,(request,response)=>{
-  response.redirect("/player");
+  response.redirect("/home");
 });
 
-app.get("/admin",requireAdmin,async (request,response)=>{
+app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
   const sportslist=await Sportname.findAll();
@@ -240,29 +240,6 @@ app.get("/signin/admin",(request,response)=>{
 
 app.get("/signin/player",(request,response)=>{
   response.render("player-signin",{title:"Player Signin",csrfToken:request.csrfToken()});
-});
-
-
-app.get("/player",requirePlayer,async (request,response)=>{
-  console.log(request.user.id);
-  const sportslist=await Sportname.findAll({});
-  const acc=await User.findByPk(request.user.id);
-  const role=acc.role;
-  const userName=acc.firstName+" "+acc.lastName;
-  const sports=Sports.findAll({where:{id:request.user.id}});
-  if (request.accepts("html")) {
-    response.render("home",{
-        userName,
-        role,
-        sports,
-        sportslist,
-        csrfToken: request.csrfToken(),
-    });
-  } else {
-    response.json({
-      userName,
-    });
-  }
 });
 
 app.get("/createsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
