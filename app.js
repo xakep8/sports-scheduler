@@ -17,7 +17,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("todo application"));
 app.use(csurf("this_should_be_32_character_long",["POST","PUT","DELETE"]));
-
+const sessionStorage=require('sessionstorage');
 app.set("view engine", "ejs");
 
 const saltRounds=10;
@@ -283,6 +283,14 @@ app.post("/addsport",requireAdmin,async (request,response)=>{
   const title=request.body.title;
   Sportname.create({title:title});
   response.redirect("/admin");
+});
+
+app.get("/sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const acc=await User.findByPk(request.user.id);
+  const role=acc.role;
+  const sport=sessionStorage.getItem('sport');
+  const sessions=Sports.findAll({where:{title:sport}});
+  response.render("sport",{sport:request.sport,csrfToken:request.csrfToken(),role:role,ses:sessions});
 });
 
 module.exports =app;

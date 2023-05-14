@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="<%= csrfToken%>">
+    <meta name="role" content="<%= role%>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        var role=document.querySelector('meta[name="role"]').getAttribute("content");
+        var sport=sessionStorage.getItem('sport');
+        document.title=sport;
+        function nameset(){
+            document.getElementById('name').innerHTML=sport;
+        }
+        function deleteTodo(id){
+            fetch(`/todos/${id}`,{
+                method:"delete",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((error)=>console.log(error));
+        }
+        sessionStorage.removeItem('sport');
+    </script>
+</head>
+<body onload="nameset()">
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <h1 class="p-2 text-4xl" id="name"><%=sport%></h1><br>
+            <h1 class="p-2 text-2xl underline">Sessions</h1><br>
+            <div>
+                <ul class="list-none">
+                    <%for(var i=0;i<ses.length; i++) {%>
+                    <li>
+                        <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= ses[i].title %></label>
+                        </div>
+                    </li>
+                    <%} %>
+                </ul>
+            </div>
+            <%-include("notifications.ejs")%>
+        </div>
+    </div>
+</body>
+</html>

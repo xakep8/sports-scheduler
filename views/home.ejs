@@ -11,20 +11,6 @@
     <script>
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var role=document.querySelector('meta[name="role"]').getAttribute("content");
-        function updateTodo(id,comp){
-            fetch(`/todos/${id}`,{
-                method:"put",
-                headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({
-                    completed:comp,
-                    "_csrf":token
-                })
-            }).then((res)=>{
-                if(res.ok){
-                    window.location.reload();
-                }
-            }).catch((err)=>console.log(err));
-        }
         function deleteTodo(id){
             fetch(`/todos/${id}`,{
                 method:"delete",
@@ -42,6 +28,10 @@
             if(role!='admin'){
                 document.getElementById('admin-controls').style.display='none';
             }
+        }
+        function sport(title){
+            sessionStorage.setItem('sport',title);
+            window.location.replace("/sport",{sport:title});
         }
     </script>
     <title>Sports-Scheduler</title>
@@ -72,7 +62,7 @@
                     <%for(var i=0;i<sportslist.length; i++) {%>
                     <li>
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
-                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= sportslist[i].title %></label>
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer" onclick="sport(`<%= sportslist[i].title %>`)"><%= sportslist[i].title %></label>
                         </div>
                     </li>
                     <%} %>
