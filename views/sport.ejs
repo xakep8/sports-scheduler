@@ -24,17 +24,20 @@
                 }
             }).catch((error)=>console.log(error));
         }
+        function session(ses){
+            window.location.replace("/session/"+ses._id);
+        }
     </script>
     <title><%=sport%></title>
 </head>
-<body onload="nameset()">
+<body>
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <h1 class="p-2 text-4xl" id="name"><%=sport%></h1><br>
             <h1 class="p-2 text-2xl underline">Sessions</h1>
             <div>
                 <ul class="list-none">
-                    <%if(ses.length==null){%>
+                    <%if(ses.length==0||ses==null){%>
                         <li>
                             <p class="p-2 text-lg">There are no sessions available, wanna create one?</p>
                         </li>
@@ -42,7 +45,7 @@
                     <%for(var i=0;i<ses.length; i++) {%>
                     <li>
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
-                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= ses[i].location %></label>
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer" onclick="session(<%= ses[i] %>)"><%= ses[i].location %></label>
                         </div>
                     </li>
                     <%} }%>

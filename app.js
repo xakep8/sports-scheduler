@@ -307,4 +307,10 @@ app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (reque
   response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken(),sport:sport});
 });
 
+app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const id=request.params.id;
+  const session=await Sports.findByPk(id);
+  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userName:userName});
+});
+
 module.exports =app;
