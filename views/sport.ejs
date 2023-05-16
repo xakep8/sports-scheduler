@@ -24,8 +24,8 @@
                 }
             }).catch((error)=>console.log(error));
         }
-        function session(ses){
-            window.location.replace("/session/"+ses._id);
+        function session(id){
+            window.location.replace("/session/"+id);
         }
     </script>
     <title><%=sport%></title>
@@ -45,7 +45,12 @@
                     <%for(var i=0;i<ses.length; i++) {%>
                     <li>
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
-                            <label class="ml-2 text-lg text-gray-600 cursor-pointer" onclick="session(<%= ses[i] %>)"><%= ses[i].location %></label>
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer flex flex-col" onclick="session(`<%= ses[i].id %>`)">
+                                <span class="underline">Session <%=i+1%>:</span>
+                                <span class="ml-5">Date: <%=ses[i].date%></span>
+                                <span class="ml-5">Time: <%=ses[i].time%></span>
+                                <span class="ml-5">Location: <%=ses[i].location%></span>
+                            </label>
                         </div>
                     </li>
                     <%} }%>

@@ -42,10 +42,6 @@ module.exports = {
       },
       additional:{
         type: Sequelize.INTEGER,
-        allowNull:false,
-        validate:{
-          notNull:true,
-        }
       },
       createdAt: {
         allowNull: false,

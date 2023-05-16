@@ -12,7 +12,6 @@ var LocalStrategy=require("passport-local");
 var bcrypt=require("bcrypt");
 const flash=require("connect-flash");
 const { request } = require("http");
-const sports = require("./models/sports");
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("todo application"));
@@ -254,19 +253,20 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   const time=request.body.time;
   const location=request.body.location;
   const players=request.body.players;
-  const addtional=request.body.addtional;
-  if(location===""){
+  const addtional=request.body.additional;
+  console.log(addtional);
+  if(location===""||location===undefined){
     request.flash("error","The location of the session cannot be left blank");
     response.redirect(`/createsession/${title}`);
   }
-  if(addtional===""){
-    if(players===""){
+  if(addtional===""||addtional===undefined){
+    if(players===""||players===undefined){
       request.flash("error","A session must have atleast two players");
       response.redirect(`/createsession/${title}`);
     }
   }
   try{
-    Sports.create({title:title,date:date,time:time,location:location,players:players,addtional:addtional});
+    Sports.create({title:title,date:date,time:time,location:location,players:players,addtional:addtional,userId:request.user.id});
     response.redirect("/sport/"+title);
   }
   catch(error){
@@ -285,7 +285,7 @@ app.post("/addsport",requireAdmin,async (request,response)=>{
     return response.redirect("/createsport");
   }
   try{
-    Sportname.create({title:title});
+    Sportname.create({title:title,userId:request.user.id});
     response.redirect("/home");
   }
   catch(error){
@@ -298,7 +298,6 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
   const role=acc.role;
   const sport=request.params.sport;
   const sessions= await Sports.findAll({where:{title:sport}});
-  console.log(sessions);
   response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:sessions});
 });
 
@@ -310,6 +309,10 @@ app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (reque
 app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   const id=request.params.id;
   const session=await Sports.findByPk(id);
+  const owner=await User.findByPk(session.userId);
+  const acc=await User.findByPk(request.user.id);
+  const role=acc.role;
+  const userName=acc.firstName+" "+acc.lastName;
   response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userName:userName});
 });
 
