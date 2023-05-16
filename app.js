@@ -248,8 +248,30 @@ app.get("/createsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=
   response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken()});
 });
 
-app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
-
+app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const title=request.body.title;
+  const date=request.body.date;
+  const time=request.body.time;
+  const location=request.body.location;
+  const players=request.body.players;
+  const addtional=request.body.addtional;
+  if(location===""){
+    request.flash("error","The location of the session cannot be left blank");
+    response.redirect(`/createsession/${title}`);
+  }
+  if(addtional===""){
+    if(players===""){
+      request.flash("error","A session must have atleast two players");
+      response.redirect(`/createsession/${title}`);
+    }
+  }
+  try{
+    Sports.create({title:title,date:date,time:time,location:location,players:players,addtional:addtional});
+    response.redirect("/sport/"+title);
+  }
+  catch(error){
+    console.log(error);
+  }
 });
 
 app.get("/createsport",requireAdmin,(request,response)=>{
@@ -258,16 +280,31 @@ app.get("/createsport",requireAdmin,(request,response)=>{
 
 app.post("/addsport",requireAdmin,async (request,response)=>{
   const title=request.body.title;
-  Sportname.create({title:title});
-  response.redirect("/home");
+  if(title===""){
+    request.flash("error","Name of the sport cannot be left blank");
+    return response.redirect("/createsport");
+  }
+  try{
+    Sportname.create({title:title});
+    response.redirect("/home");
+  }
+  catch(error){
+    console.log(error);
+  }
 });
 
-app.get("/sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   const acc=await User.findByPk(request.user.id);
   const role=acc.role;
-  const sport=sessionStorage.getItem('sport');
-  const sessions=Sports.findAll({where:{title:sport}});
-  response.render("sport",{sport:request.sport,csrfToken:request.csrfToken(),role:role,ses:sessions});
+  const sport=request.params.sport;
+  const sessions= await Sports.findAll({where:{title:sport}});
+  console.log(sessions);
+  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:sessions});
+});
+
+app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const sport=request.params.sport;
+  response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken(),sport:sport});
 });
 
 module.exports =app;

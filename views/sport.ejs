@@ -11,11 +11,6 @@
     <script>
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var role=document.querySelector('meta[name="role"]').getAttribute("content");
-        var sport=sessionStorage.getItem('sport');
-        document.title=sport;
-        function nameset(){
-            document.getElementById('name').innerHTML=sport;
-        }
         function deleteTodo(id){
             fetch(`/todos/${id}`,{
                 method:"delete",
@@ -29,8 +24,8 @@
                 }
             }).catch((error)=>console.log(error));
         }
-        sessionStorage.removeItem('sport');
     </script>
+    <title><%=sport%></title>
 </head>
 <body onload="nameset()">
     <div class="grid grid-cols-6">
@@ -47,13 +42,13 @@
                     <%for(var i=0;i<ses.length; i++) {%>
                     <li>
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
-                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= ses[i].title %></label>
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer"><%= ses[i].location %></label>
                         </div>
                     </li>
                     <%} }%>
                 </ul>
                 <div class="flex flex-col">
-                    <a href="/createsession" class="text-green-600 p-2 underline">Create Session</a>
+                    <a href='/createsession/<%=sport%>' class="text-green-600 p-2 underline">Create Session</a>
                     <a href="/reports" class="text-green-600 p-2 underline">View Report</a>
                 </div>
             </div>

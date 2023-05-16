@@ -45,14 +45,15 @@
             <h1 class="p-2 text-4xl">Create a new session</h1>
             <form action="/addsession" method="post">
                 <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+                <input type="hidden" name="title" value="<%=sport%>"/>
                 <div class="flex flex-col gap-5 py-10 p-2">
                     <div class="flex-auto">
                         <label>When will the session be held?</label>
-                        <input type="date" name="date" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                        <input type="date" name="date" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4" required/>
                     </div>
                     <div class="flex-auto">
                         <label>What time will the session be held?</label>
-                        <input type="time" name="time" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4"/>
+                        <input type="time" name="time" class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm leading-4" required/>
                     </div>
                     <div class="flex-auto">
                         <label>Where will the session be held?</label>

@@ -30,8 +30,8 @@
             }
         }
         function sport(title){
-            sessionStorage.setItem('sport',title);
-            window.location.replace("/sport",{sport:title});
+            // sessionStorage.setItem('sport',title);
+            window.location.replace(`/sport/${title}`);
         }
     </script>
     <title>Sports-Scheduler</title>
