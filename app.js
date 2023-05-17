@@ -536,4 +536,22 @@ app.get("/session/:id/updatesession",requireAdmin,async (request,response)=>{
   }
 });
 
+app.get("/changepassword",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
+  response.render("changepassword",{csrfToken:request.csrfToken()});
+});
+
+app.post("/updatepassword",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const user=await User.findOne({where:{id:request.user.id}});
+  const newhashedpwd=await bcrypt.hash(request.body.newpass,saltRounds);
+  if(request.body.newpass==request.body.renewpass){
+    await user.update({password:newhashedpwd});
+    request.flash("error","Your password has changed");
+    return response.redirect("/home");
+  }
+  else{
+    request.flash("error","New password and Re-entered password don't match");
+    response.redirect("/changepassword");
+  }
+});
+
 module.exports =app;
