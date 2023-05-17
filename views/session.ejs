@@ -139,7 +139,7 @@
                 <h1 class="p-2 text-4xl" id="name"><%=owner%>'s Session</h1>
                 <div class="p-4 absolute start-2/3" id="creator">
                     <a class="text-green-600 p-4 underline cursor-pointer" onclick="deleteSession(`<%=session.id%>`)">Delete Session</a>
-                    <a class="text-green-600 p-4 underline cursor-pointer" onclick="edit()">Edit Session</a>
+                    <a href="/session/<%=session.id%>/edit" class="text-green-600 p-4 underline cursor-pointer">Edit Session</a>
                 </div>
             </div>
             <div>

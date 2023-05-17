@@ -491,4 +491,49 @@ app.get("/sport/:sport/report",requireAdmin,async (request,response)=>{
   response.render("reports",{csrfToken:request.csrfToken(),pastses:pastsessions,upses:upsessions,sport:request.params.sport});
 });
 
+app.get("/session/:id/edit",requireAdmin,(request,response)=>{
+  const id=request.params.id;
+  response.render("editsession",{title:"Update Session",csrfToken:request.csrfToken(),id:id});
+});
+
+app.get("/session/:id/updatesession",requireAdmin,async (request,response)=>{
+  const date=request.body.date;
+  const time=request.body.time;
+  const location=request.body.location;
+  var players=request.body.players;
+  var addtional=Number(request.body.additional);
+  const acc=await User.findByPk(request.user.id);
+  const username=acc.email;
+  players=username+','+players;
+  const playerlist=players.split(',');
+  var playerlist1="";
+  for(var i=0;i<playerlist.length;i++){
+    const player=await User.findOne({where:{email:playerlist[i]}});
+    if(player){
+      playerlist1=playerlist1+player.id.toString()+',';
+    }
+  }
+  if(location===""||location===undefined){
+    request.flash("error","The location of the session cannot be left blank");
+    response.redirect(`/session/${request.params.id}/edit`);
+  }
+  if(addtional===""||addtional===undefined){
+    if(players===""||players===undefined){
+      request.flash("error","A session must have atleast two players");
+      response.redirect(`/session/${request.params.id}/edit`);
+    }
+  }
+  try{
+    const session=await Sports.update({date:date,time:time,location:location,players:playerlist1,additional:addtional});
+    console.log(addtional);
+    var usersess=acc.sessions;
+    usersess+=','+session.id;
+    await acc.update({sessions:usersess});
+    response.redirect("/home");
+  }
+  catch(error){
+    console.log(error);
+  }
+});
+
 module.exports =app;
