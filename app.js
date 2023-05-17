@@ -16,7 +16,6 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("todo application"));
 app.use(csurf("this_should_be_32_character_long",["POST","PUT","DELETE"]));
-const sessionStorage=require('sessionstorage');
 app.set("view engine", "ejs");
 
 const saltRounds=10;
@@ -242,8 +241,6 @@ app.get("/signin/player",(request,response)=>{
 });
 
 app.get("/createsession",connectEnsureLogin.ensureLoggedIn(),(request,response)=>{
-  // console.log(request.user.id);
-  // const sport=request.body.title;
   response.render("createsession",{title:"Create Session",csrfToken:request.csrfToken()});
 });
 
@@ -252,9 +249,19 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   const date=request.body.date;
   const time=request.body.time;
   const location=request.body.location;
-  const players=request.body.players;
+  var players=request.body.players;
   const addtional=request.body.additional;
-  console.log(addtional);
+  const acc=await User.findByPk(request.user.id);
+  const username=acc.email;
+  players=username+','+players;
+  const playerlist=players.split(',');
+  var playerlist1="";
+  for(var i=0;i<playerlist.length;i++){
+    const player=await User.findOne({where:{email:playerlist[i]}});
+    if(player){
+      playerlist1=playerlist1+player.id.toString()+',';
+    }
+  }
   if(location===""||location===undefined){
     request.flash("error","The location of the session cannot be left blank");
     response.redirect(`/createsession/${title}`);
@@ -266,7 +273,7 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
     }
   }
   try{
-    Sports.create({title:title,date:date,time:time,location:location,players:players,addtional:addtional,userId:request.user.id});
+    Sports.create({title:title,date:date,time:time,location:location,players:playerlist1,addtional:addtional,userId:request.user.id});
     response.redirect("/sport/"+title);
   }
   catch(error){
@@ -310,10 +317,49 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   const id=request.params.id;
   const session=await Sports.findByPk(id);
   const owner=await User.findByPk(session.userId);
+  const ownername=owner.firstName+" "+owner.lastName;
   const acc=await User.findByPk(request.user.id);
   const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
-  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userName:userName});
+  const players=session.players;
+  const playerlist=players.split(",");
+  const playerlist1=[];
+  const play=[];
+  if(playerlist.length>0){
+    for(let i=0;i<playerlist.length;i++){
+      if(Number(playerlist[i]).toString()!="NaN"){
+        play.push(playerlist[i]);
+        const player= await User.findByPk(Number(playerlist[i]));
+        if(player){
+          const playername=player.firstName+" "+player.lastName;
+          playerlist1.push(playername);
+        }
+      }
+    }
+  }
+  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userid:request.user.id,userName:userName,owner:ownername,players:playerlist1,playerid:play});
+});
+
+app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  try{
+    const session=await Sports.findByPk(request.params.id);
+    return response.json(session.update({players:request.body.player}));
+  }
+  catch(error){
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+app.put("/admin/session/:id",requireAdmin,async (request,response)=>{
+  try{
+    const session=await Sports.findByPk(request.params.id);
+    return response.json(session.update({players:request.body.player}));
+  }
+  catch(error){
+    console.log(error);
+    return response.status(422).json(error);
+  }
 });
 
 module.exports =app;

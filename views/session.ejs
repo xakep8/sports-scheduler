@@ -5,61 +5,152 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="<%= csrfToken%>">
     <meta name="role" content="<%= role%>">
+    <meta name="players" content="<%=playerid%>">
+    <meta name="userid" content="<%=userid%>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/styles.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var role=document.querySelector('meta[name="role"]').getAttribute("content");
-        function deleteTodo(id){
-            fetch(`/todos/${id}`,{
-                method:"delete",
+        var players=document.querySelector('meta[name="players"]').getAttribute("content");
+        var userid=document.querySelector('meta[name="userid"]').getAttribute("content");
+        var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        // function deleteTodo(id){
+        //     fetch(`/todos/${id}`,{
+        //         method:"delete",
+        //         headers:{"Content-Type":"application/json"},
+        //         body: JSON.stringify({
+        //             "_csrf":token
+        //         })
+        //     }).then((res)=>{
+        //         if(res.ok){
+        //             window.location.reload();
+        //         }
+        //     }).catch((error)=>console.log(error));
+        // }
+        function removeplayer(sesid,id,play){
+            var playerlist=play.toString().split(",");
+            var playing="";
+            for(var i=0;i<playerlist.length;i++){
+                if(playerlist[i]!=id){
+                    playing+=playerlist[i]+',';
+                }
+            }
+            fetch(`/admin/session/${sesid}`,{
+                method:"put",
                 headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
+                    player:playing,
                     "_csrf":token
                 })
             }).then((res)=>{
                 if(res.ok){
                     window.location.reload();
                 }
-            }).catch((error)=>console.log(error));
+            }).catch((err)=>console.log(err));
         }
-        function session(id){
-            window.location.replace("/session/"+id);
+        function join(sesid,id,play){
+            play+=','+id;
+            fetch(`/session/${sesid}`,{
+                method:"put",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    player:play,
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((err)=>console.log(err));
+        }
+        function leave(sesid,id,play){
+            var playerlist=play.toString().split(",");
+            var playing="";
+            for(var i=0;i<playerlist.length;i++){
+                if(playerlist[i]!=id){
+                    playing+=playerlist[i]+',';
+                }
+            }
+            console.log("data");
+            console.log(id);
+            console.log(playing);
+            fetch(`/session/${sesid}`,{
+                method:"put",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    player:playing,
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.reload();
+                }
+            }).catch((err)=>console.log(err));
+        }
+        function adminoptions(){
+            if(role=="admin"){
+                const deletebtn=document.querySelectorAll("#admindelete");
+                deletebtn.forEach((ele)=>{
+                    ele.classList.remove("hidden");
+                });
+                document.getElementById("playerctrl").style.display='none';
+            }
+            else{
+                const playerlist=players.split(",");
+                var notfound=1;
+                for(var i=0;i<playerlist.length;i++){
+                    if(playerlist[i]==userid){
+                        document.getElementById("join").style.display='none';
+                        notfound=0;
+                        break;
+                    }
+                }
+                if(notfound==1){
+                    document.getElementById("leave").style.display='none';
+                }
+            }
         }
     </script>
     <title><%=title%></title>
 </head>
-<body>
+<body onload="adminoptions()">
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
-            <h1 class="p-2 text-4xl" id="name"><%=session%></h1><br>
+            <h1 class="p-2 text-4xl" id="name"><%=owner%>'s Session</h1>
             <div>
-                <ul class="list-none">
-                    <%if(ses.length==0||ses==null){%>
-                        <li>
-                            <p class="p-2 text-lg">There are no sessions available, wanna create one?</p>
-                        </li>
-                    <%} else{%>
-                    <%for(var i=0;i<ses.length; i++) {%>
+                <ul class="list-none ml-2">
                     <li>
+                        Location: <%=session.location%>
+                    </li>
+                    <li>
+                        Date: <%=session.date%>
+                    </li>
+                    <li>
+                        Time: <%=session.time%>
+                    </li>
+                </ul>
+                <h1 class="p-2 text-2xl underline">Players</h1>
+                <ul class="list-none">
+                    <%for(var i=0;i<players.length; i++) {%>
+                    <li class="Todo-Item">
                         <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
-                            <label class="ml-2 text-lg text-gray-600 cursor-pointer flex flex-col" onclick="session(`<%= ses[i].id %>`)">
-                                <span class="underline">Session <%=i+1%>:</span>
-                                <span class="ml-5">Date: <%=ses[i].date%></span>
-                                <span class="ml-5">Time: <%=ses[i].time%></span>
-                                <span class="ml-5">Location: <%=ses[i].location%></span>
-                            </label>
+                            <label class="ml-2 text-sm text-gray-600 cursor-pointer"><%= players[i] %></label>
+                            <a href="#" class="ml-2 hidden trash-icon" onclick="removeplayer( <%=session.id%>,<%= playerid[i] %>,<%=playerid%>)" id="admindelete">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                  </svg>                      
+                            </a>
                         </div>
                     </li>
-                    <%} }%>
+                    <%} %>
                 </ul>
-                <div class="flex flex-col">
-                    <div id="join">
-                        <a href='/session/:id/join' class="text-green-600 p-2 underline" >Join Session</a>
+                <div class="flex flex-col" id="playerctrl">
+                    <div>
+                        <a class="text-green-600 p-2 underline cursor-pointer" id="join" onclick="join(<%=session.id%>,<%=userid%>,<%=playerid%>)">Join Session</a>
                     </div>
-                    <div id="leave">
-                        <a href="/session/:id/leave" class="text-green-600 p-2 underline" >View Report</a>
+                    <div>
+                        <a class="text-green-600 p-2 underline cursor-pointer" id="leave" onclick="leave(<%=session.id%>,<%=userid%>,<%=playerid%>)">Leave Session</a>
                     </div>
                 </div>
             </div>
