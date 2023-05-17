@@ -219,7 +219,19 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   for(var i=0;i<sessionid.length;i++){
     if(Number(sessionid[i]).toString()!="NaN"&&sessionid[i]!=""&&sessionid[i]!=null){
       const sess=await Sports.findOne({where:{id:sessionid[i]}});
-      usersessions.push(sess);
+      const t=new Date().toISOString().split("T");
+      const date=t[0];
+      console.log(date);
+      const time=t[1].substring(0,5);
+      const gtime=sess.time;
+      if(sess.date==date){
+        if(gtime>time){
+          usersessions.push(sess);
+        }
+      }
+      else if(sess.date>date){
+        usersessions.push(sess);
+      }
     }
   }
   const sportslist=await Sportname.findAll();
@@ -321,8 +333,23 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
   const role=acc.role;
   const sport=request.params.sport;
   const sessions= await Sports.findAll({where:{title:sport}});
+  const upsessions=[];
+  for(var i=0;i<sessions.length;i++){
+      const t=new Date().toISOString().split("T");
+      const date=t[0];
+      const time=t[1].substring(0,5);
+      const gtime=sessions[i].time;
+      if(sessions[i].date==date){
+        if(gtime>time){
+          upsessions.push(sessions[i]);
+        }
+      }
+      else if(sessions[i].date>date){
+        upsessions.push(sessions[i]);
+      }
+  }
   const sports=await Sportname.findOne({where:{title:request.params.sport}});
-  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:sessions,userid:request.user.id,owner:sports.userId});
+  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:upsessions,userid:request.user.id,owner:sports.userId});
 });
 
 app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
@@ -437,10 +464,31 @@ app.put("/admin/session/:id",requireAdmin,async (request,response)=>{
   }
 });
 
-app.get("/session/:id/reports",requireAdmin,async (request,response)=>{
-  console.log(request.params.id);
-  const session=Sports.findOne({where:{id:request.params.id}});
-  response.render("reports",{})
+app.get("/sport/:sport/report",requireAdmin,async (request,response)=>{
+  const sessions= await Sports.findAll({where:{title:request.params.sport}});
+  const upsessions=[];
+  const pastsessions=[];
+  for(var i=0;i<sessions.length;i++){
+      const t=new Date().toISOString().split("T");
+      const date=t[0];
+      const time=t[1].substring(0,5);
+      const gtime=sessions[i].time;
+      if(sessions[i].date==date){
+        if(gtime>time){
+          upsessions.push(sessions[i]);
+        }
+        else{
+          pastsessions.push(sessions[i]);
+        }
+      }
+      else if(sessions[i].date>date){
+        upsessions.push(sessions[i]);
+      }
+      else{
+        pastsessions.push(sessions[i]);
+      }
+  }
+  response.render("reports",{csrfToken:request.csrfToken(),pastses:pastsessions,upses:upsessions,sport:request.params.sport});
 });
 
 module.exports =app;

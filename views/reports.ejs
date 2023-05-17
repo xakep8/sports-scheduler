@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="csrf-token" content="<%= csrfToken%>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="./css/styles.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Report</title>
+</head>
+<body >
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <h1 class="p-2 text-4xl" id="name"><%=sport%> Report</h1>
+            <h1 class="p-2 text-2xl underline">Past Sessions</h1>
+            <div>
+                <ul class="list-none">
+                    <%if(pastses.length==0||pastses==null){%>
+                        <li>
+                            <p class="p-2 text-lg">There are no sessions available</p>
+                        </li>
+                    <%} else{%>
+                    <%for(var i=0;i<pastses.length; i++) {%>
+                    <li>
+                        <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer flex flex-col" onclick="session(`<%= pastses[i].id %>`)">
+                                <span class="underline">Session <%=i+1%>:</span>
+                                <span class="ml-5">Date: <%=pastses[i].date%></span>
+                                <span class="ml-5">Time: <%=pastses[i].time%></span>
+                                <span class="ml-5">Location: <%=pastses[i].location%></span>
+                            </label>
+                        </div>
+                    </li>
+                    <%} }%>
+                </ul>
+            </div>
+            <h1 class="p-2 text-2xl underline">Upcoming Sessions</h1>
+            <div>
+                <ul class="list-none">
+                    <%if(upses.length==0||upses==null){%>
+                        <li>
+                            <p class="p-2 text-lg">There are no sessions available, wanna create one?</p>
+                        </li>
+                    <%} else{%>
+                    <%for(var i=0;i<upses.length; i++) {%>
+                    <li>
+                        <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer flex flex-col" onclick="session(`<%= upses[i].id %>`)">
+                                <span class="underline">Session <%=i+1%>:</span>
+                                <span class="ml-5">Date: <%=upses[i].date%></span>
+                                <span class="ml-5">Time: <%=upses[i].time%></span>
+                                <span class="ml-5">Location: <%=upses[i].location%></span>
+                            </label>
+                        </div>
+                    </li>
+                    <%} }%>
+                </ul>
+            </div>
+            <br>
+            <a href='/home' class="text-green-600">Return to home page</a>
+            <%-include("notifications.ejs")%>
+        </div>
+    </div>
+</body>
+</html>
