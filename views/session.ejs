@@ -7,6 +7,7 @@
     <meta name="role" content="<%= role%>">
     <meta name="players" content="<%=playerid%>">
     <meta name="userid" content="<%=userid%>">
+    <meta name="sport" content="<%=sport%>">
     <meta name="sportowner" content="<%=sportowner%>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/styles.css" rel="stylesheet">
@@ -17,6 +18,7 @@
         var userid=document.querySelector('meta[name="userid"]').getAttribute("content");
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var sportowner=document.querySelector('meta[name="sportowner"]').getAttribute("content");
+        var sport=document.querySelector('meta[name="sport"]').getAttribute("content");
         // function deleteTodo(id){
         //     fetch(`/todos/${id}`,{
         //         method:"delete",
@@ -88,6 +90,9 @@
             }).catch((err)=>console.log(err));
         }
         function adminoptions(){
+            if(sportowner!=userid){
+                document.getElementById('creator').style.display='none';
+            }
             if(sportowner==userid){
                 const deletebtn=document.querySelectorAll("#admindelete");
                 deletebtn.forEach((ele)=>{
@@ -107,13 +112,32 @@
                 document.getElementById("leave").style.display='none';
             }
         }
+        function deleteSession(id){
+            fetch(`/session/${id}`,{
+                method:"delete",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.replace(`/sport/${sport}`);
+                }
+            }).catch((error)=>console.log(error));
+        }
     </script>
     <title><%=title%></title>
 </head>
 <body onload="adminoptions()">
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
-            <h1 class="p-2 text-4xl" id="name"><%=owner%>'s Session</h1>
+            <div class="inline-flex">
+                <h1 class="p-2 text-4xl" id="name"><%=owner%>'s Session</h1>
+                <div class="p-4 absolute start-2/3" id="creator">
+                    <a class="text-green-600 p-4 underline cursor-pointer" onclick="deleteSession(`<%=session.id%>`)">Delete Session</a>
+                    <a class="text-green-600 p-4 underline cursor-pointer" onclick="edit()">Edit Session</a>
+                </div>
+            </div>
             <div>
                 <ul class="list-none ml-2">
                     <li>

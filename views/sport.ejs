@@ -5,12 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="<%= csrfToken%>">
     <meta name="role" content="<%= role%>">
+    <meta name="userid" content="<%= userid%>">
+    <meta name="owner" content="<%= owner%>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/styles.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var role=document.querySelector('meta[name="role"]').getAttribute("content");
+        var userid=document.querySelector('meta[name="userid"]').getAttribute("content");
+        var owner=document.querySelector('meta[name="owner"]').getAttribute("content");
         function deleteTodo(id){
             fetch(`/todos/${id}`,{
                 method:"delete",
@@ -40,15 +44,20 @@
                 }
             }).catch((error)=>console.log(error));
         }
+        function creatorop(){
+            if(userid!=owner){
+                document.getElementById('creator').style.display='none';
+            }
+        }
     </script>
     <title><%=sport%></title>
 </head>
-<body>
+<body onload="creatorop()">
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
             <div class="inline-flex">
                 <h1 class="p-2 text-4xl" id="name"><%=sport%></h1>
-                <div class="p-4 absolute start-2/3">
+                <div class="p-4 absolute start-2/3" id="creator">
                     <a class="text-green-600 p-4 underline cursor-pointer" onclick="deleteSport(`<%=sport%>`)">Delete Sport</a>
                     <a class="text-green-600 p-4 underline cursor-pointer" onclick="edit()">Edit Sport</a>
                 </div>

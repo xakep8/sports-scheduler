@@ -305,7 +305,8 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
   const role=acc.role;
   const sport=request.params.sport;
   const sessions= await Sports.findAll({where:{title:sport}});
-  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:sessions});
+  const sports=await Sportname.findOne({where:{title:request.params.sport}});
+  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:sessions,userid:request.user.id,owner:sports.userId});
 });
 
 app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
@@ -339,7 +340,7 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
       }
     }
   }
-  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userid:request.user.id,userName:userName,owner:ownername,players:playerlist1,playerid:play,sportowner:sportowner});
+  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userid:request.user.id,userName:userName,owner:ownername,players:playerlist1,playerid:play,sportowner:sportowner,sport:session.title});
 });
 
 app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
@@ -373,7 +374,7 @@ app.delete("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,re
   const sport=await Sportname.findOne({where:{title:request.params.sport}});
   if(sport.userId!=request.user.id){
     request.flash("error","You are not authorized to delete this session");
-    return response.redirect(`/session/${request.params.id}`);
+    return response.redirect(`/sport/${request.params.sport}`);
   }
   try{
     await Sports.destroy({where:{title:request.params.sport}});
