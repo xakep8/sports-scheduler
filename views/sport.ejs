@@ -27,13 +27,32 @@
         function session(id){
             window.location.replace("/session/"+id);
         }
+        function deleteSport(sport){
+            fetch(`/sport/${sport}`,{
+                method:"delete",
+                headers:{"Content-Type":"application/json"},
+                body: JSON.stringify({
+                    "_csrf":token
+                })
+            }).then((res)=>{
+                if(res.ok){
+                    window.location.replace("/home");
+                }
+            }).catch((error)=>console.log(error));
+        }
     </script>
     <title><%=sport%></title>
 </head>
 <body>
     <div class="grid grid-cols-6">
         <div class="col-start-3 col-span-2">
-            <h1 class="p-2 text-4xl" id="name"><%=sport%></h1><br>
+            <div class="inline-flex">
+                <h1 class="p-2 text-4xl" id="name"><%=sport%></h1>
+                <div class="p-4 absolute start-2/3">
+                    <a class="text-green-600 p-4 underline cursor-pointer" onclick="deleteSport(`<%=sport%>`)">Delete Sport</a>
+                    <a class="text-green-600 p-4 underline cursor-pointer" onclick="edit()">Edit Sport</a>
+                </div>
+            </div>
             <h1 class="p-2 text-2xl underline">Sessions</h1>
             <div>
                 <ul class="list-none">

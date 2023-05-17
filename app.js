@@ -317,7 +317,9 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   const id=request.params.id;
   const session=await Sports.findByPk(id);
   const owner=await User.findByPk(session.userId);
-  const ownername=owner.firstName+" "+owner.lastName;
+  const ownername=owner.firstName+" "+owner.lastName; 
+  const sport=await Sportname.findOne({where:{title:session.title}});
+  const sportowner=sport.userId;
   const acc=await User.findByPk(request.user.id);
   const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
@@ -337,13 +339,46 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
       }
     }
   }
-  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userid:request.user.id,userName:userName,owner:ownername,players:playerlist1,playerid:play});
+  response.render("session",{title:"Session",csrfToken:request.csrfToken(),session:session,role:role,userid:request.user.id,userName:userName,owner:ownername,players:playerlist1,playerid:play,sportowner:sportowner});
 });
 
 app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   try{
     const session=await Sports.findByPk(request.params.id);
     return response.json(session.update({players:request.body.player}));
+  }
+  catch(error){
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+app.delete("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const session=await Sports.findOne({where:{id:request.params.id}});
+  if(session.userId!=request.user.id){
+    request.flash("error","You are not authorized to delete this session");
+    return response.redirect(`/session/${request.params.id}`);
+  }
+  try{
+    Sports.destroy({where:{id:request.params.id}});
+    return response.json({Success:true});
+  }
+  catch(error){
+    console.log(error);
+    return response.status(422).json(error);
+  }
+});
+
+app.delete("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const sport=await Sportname.findOne({where:{title:request.params.sport}});
+  if(sport.userId!=request.user.id){
+    request.flash("error","You are not authorized to delete this session");
+    return response.redirect(`/session/${request.params.id}`);
+  }
+  try{
+    await Sports.destroy({where:{title:request.params.sport}});
+    await Sportname.destroy({where:{title:request.params.sport}});
+    return response.json({Success:true});
   }
   catch(error){
     console.log(error);

@@ -7,6 +7,7 @@
     <meta name="role" content="<%= role%>">
     <meta name="players" content="<%=playerid%>">
     <meta name="userid" content="<%=userid%>">
+    <meta name="sportowner" content="<%=sportowner%>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="./css/styles.css" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -15,6 +16,7 @@
         var players=document.querySelector('meta[name="players"]').getAttribute("content");
         var userid=document.querySelector('meta[name="userid"]').getAttribute("content");
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+        var sportowner=document.querySelector('meta[name="sportowner"]').getAttribute("content");
         // function deleteTodo(id){
         //     fetch(`/todos/${id}`,{
         //         method:"delete",
@@ -72,9 +74,6 @@
                     playing+=playerlist[i]+',';
                 }
             }
-            console.log("data");
-            console.log(id);
-            console.log(playing);
             fetch(`/session/${sesid}`,{
                 method:"put",
                 headers:{"Content-Type":"application/json"},
@@ -89,26 +88,23 @@
             }).catch((err)=>console.log(err));
         }
         function adminoptions(){
-            if(role=="admin"){
+            if(sportowner==userid){
                 const deletebtn=document.querySelectorAll("#admindelete");
                 deletebtn.forEach((ele)=>{
                     ele.classList.remove("hidden");
                 });
-                document.getElementById("playerctrl").style.display='none';
             }
-            else{
-                const playerlist=players.split(",");
-                var notfound=1;
-                for(var i=0;i<playerlist.length;i++){
-                    if(playerlist[i]==userid){
-                        document.getElementById("join").style.display='none';
-                        notfound=0;
-                        break;
-                    }
+            const playerlist=players.split(",");
+            var notfound=1;
+            for(var i=0;i<playerlist.length;i++){
+                if(playerlist[i]==userid){
+                    document.getElementById("join").style.display='none';
+                    notfound=0;
+                    break;
                 }
-                if(notfound==1){
-                    document.getElementById("leave").style.display='none';
-                }
+            }
+            if(notfound==1){
+                document.getElementById("leave").style.display='none';
             }
         }
     </script>
