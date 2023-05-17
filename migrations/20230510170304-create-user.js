@@ -10,7 +10,11 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       firstName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false,
+        validate:{
+          notNull:true,
+        }
       },
       lastName: {
         type: Sequelize.STRING
@@ -18,12 +22,23 @@ module.exports = {
       email: {
         type: Sequelize.STRING,
         unique:true,
+        allowNull:false,
+        validate:{
+          notNull:true,
+        }
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull:false,
+        validate:{
+          notNull:true,
+        }
       },
       role: {
         type: Sequelize.STRING
+      },
+      sessions:{
+        type: Sequelize.STRING,
       },
       createdAt: {
         allowNull: false,

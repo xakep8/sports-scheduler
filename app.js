@@ -12,6 +12,7 @@ var LocalStrategy=require("passport-local");
 var bcrypt=require("bcrypt");
 const flash=require("connect-flash");
 const { request } = require("http");
+const { resourceUsage } = require("process");
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser("todo application"));
@@ -128,6 +129,7 @@ app.post("/playingusers",async (request,response)=>{
       email:request.body.email,
       password: hashedPwd,
       role:"player",
+      sessions:"",
     });
     request.login(user,(err)=>{
       if(err){
@@ -211,6 +213,16 @@ app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signi
 app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   console.log(request.user.id);
   const acc=await User.findByPk(request.user.id);
+  const sessions=acc.sessions;
+  const sessionid=sessions==null?[]:sessions.split(",");
+  const usersessions=[];
+  console.log(sessions);
+  for(var i=0;i<sessionid.length;i++){
+    if(Number(sessionid[i]).toString()!="NaN"){
+      const sess=await Sports.findOne({where:{id:sessionid[i]}});
+      usersessions.push(sess);
+    }
+  }
   const sportslist=await Sportname.findAll();
   const role=acc.role;
   const userName=acc.firstName+" "+acc.lastName;
@@ -219,6 +231,7 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
         userName,
         role,
         sportslist,
+        usersessions,
         csrfToken: request.csrfToken(),
     });
   } else {
@@ -273,7 +286,11 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
     }
   }
   try{
-    Sports.create({title:title,date:date,time:time,location:location,players:playerlist1,addtional:addtional,userId:request.user.id});
+    const session=await Sports.create({title:title,date:date,time:time,location:location,players:playerlist1,addtional:addtional,userId:request.user.id});
+    console.log(session);
+    var usersess=acc.sessions;
+    usersess+=','+session.id;
+    await acc.update({sessions:usersess});
     response.redirect("/sport/"+title);
   }
   catch(error){
@@ -344,7 +361,26 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
 });
 
 app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
+  const user=await User.findOne({where:{id:request.user.id}});
+  const usersessions=user.sessions;
+  if(request.body.type=="join"){
+    usersessions+=','+request.params.id;
+  }
+  else if(request.body.type=="leave"){
+    const n=usersessions.split(",");
+    const str="";
+    for(var i=0;i<n.length;i++){
+      if(n[i]!=request.body.session){
+        str+=n[i];
+        if(i!=n.length-1){
+          str+=',';
+        }
+      }
+    }
+    usersessions=str;
+  }
   try{
+    await user.update({sessions:usersessions});
     const session=await Sports.findByPk(request.params.id);
     return response.json(session.update({players:request.body.player}));
   }

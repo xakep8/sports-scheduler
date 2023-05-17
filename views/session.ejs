@@ -59,6 +59,8 @@
                 method:"put",
                 headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
+                    type:"join",
+                    session:sesid,
                     player:play,
                     "_csrf":token
                 })
@@ -80,6 +82,8 @@
                 method:"put",
                 headers:{"Content-Type":"application/json"},
                 body: JSON.stringify({
+                    type:"leave",
+                    session:sesid,
                     player:playing,
                     "_csrf":token
                 })

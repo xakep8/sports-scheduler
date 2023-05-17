@@ -33,6 +33,9 @@
             // sessionStorage.setItem('sport',title);
             window.location.replace(`/sport/${title}`);
         }
+        function session(id){
+            window.location.replace("/session/"+id);
+        }
     </script>
     <title>Sports-Scheduler</title>
 </head>
@@ -53,7 +56,25 @@
             <br>
             <h1 class="p-2 text-2xl underline">You're upcoming sessions</h1><br>
             <div>
-
+                <ul class="list-none">
+                    <%if(usersessions.length==0||usersessions==null){%>
+                        <li>
+                            <p class="p-2 text-lg">There are no sessions available, wanna create one?</p>
+                        </li>
+                    <%} else{%>
+                    <%for(var i=0;i<usersessions.length; i++) {%>
+                    <li>
+                        <div class="flex w-fit my-2 px-2 py-1 items-center hover:bg-purple-50 rounded">
+                            <label class="ml-2 text-lg text-gray-600 cursor-pointer flex flex-col" onclick="session(`<%= usersessions[i].id %>`)">
+                                <span class="underline">Session <%=i+1%>:</span>
+                                <span class="ml-5">Date: <%=usersessions[i].date%></span>
+                                <span class="ml-5">Time: <%=usersessions[i].time%></span>
+                                <span class="ml-5">Location: <%=usersessions[i].location%></span>
+                            </label>
+                        </div>
+                    </li>
+                    <%} }%>
+                </ul>
             </div>
             <br>
             <h1 class="p-2 text-2xl underline">Available Sports</h1><br>
