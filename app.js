@@ -103,7 +103,7 @@ app.post("/adminusers",async (request,response)=>{
   }
   catch(error){
     request.flash("error","Email already registered");
-    response.redirect("/signup");
+    response.redirect("/signup/admin");
     console.log(error);
   }
 });
@@ -140,7 +140,7 @@ app.post("/playingusers",async (request,response)=>{
   }
   catch(error){
     request.flash("error","Email already registered");
-    response.redirect("/signup");
+    response.redirect("/signup/player");
     console.log(error);
   }
 });
@@ -216,9 +216,8 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   const sessions=acc.sessions;
   const sessionid=sessions==null?[]:sessions.split(",");
   const usersessions=[];
-  console.log(sessions);
   for(var i=0;i<sessionid.length;i++){
-    if(Number(sessionid[i]).toString()!="NaN"){
+    if(Number(sessionid[i]).toString()!="NaN"&&sessionid[i]!=""&&sessionid[i]!=null){
       const sess=await Sports.findOne({where:{id:sessionid[i]}});
       usersessions.push(sess);
     }
@@ -263,7 +262,7 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   const time=request.body.time;
   const location=request.body.location;
   var players=request.body.players;
-  const addtional=request.body.additional;
+  var addtional=Number(request.body.additional);
   const acc=await User.findByPk(request.user.id);
   const username=acc.email;
   players=username+','+players;
@@ -286,8 +285,8 @@ app.post("/addsession",connectEnsureLogin.ensureLoggedIn(),async (request,respon
     }
   }
   try{
-    const session=await Sports.create({title:title,date:date,time:time,location:location,players:playerlist1,addtional:addtional,userId:request.user.id});
-    console.log(session);
+    const session=await Sports.create({title:title,date:date,time:time,location:location,players:playerlist1,additional:addtional,userId:request.user.id});
+    console.log(addtional);
     var usersess=acc.sessions;
     usersess+=','+session.id;
     await acc.update({sessions:usersess});
@@ -362,13 +361,17 @@ app.get("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
 
 app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   const user=await User.findOne({where:{id:request.user.id}});
-  const usersessions=user.sessions;
+  var usersessions=user.sessions;
+  const session=await Sports.findByPk(request.params.id);
+  var additional=Number(session.additional);
   if(request.body.type=="join"){
+    additional-=1;
     usersessions+=','+request.params.id;
   }
   else if(request.body.type=="leave"){
+    additional+=1;
     const n=usersessions.split(",");
-    const str="";
+    var str="";
     for(var i=0;i<n.length;i++){
       if(n[i]!=request.body.session){
         str+=n[i];
@@ -381,8 +384,8 @@ app.put("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,respon
   }
   try{
     await user.update({sessions:usersessions});
-    const session=await Sports.findByPk(request.params.id);
-    return response.json(session.update({players:request.body.player}));
+    await session.update({players:request.body.player,additional:additional});
+    return response.json({Success:true});
   }
   catch(error){
     console.log(error);
@@ -432,6 +435,12 @@ app.put("/admin/session/:id",requireAdmin,async (request,response)=>{
     console.log(error);
     return response.status(422).json(error);
   }
+});
+
+app.get("/session/:id/reports",requireAdmin,async (request,response)=>{
+  console.log(request.params.id);
+  const session=Sports.findOne({where:{id:request.params.id}});
+  response.render("reports",{})
 });
 
 module.exports =app;

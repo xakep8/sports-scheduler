@@ -78,6 +78,7 @@
                                 <span class="ml-5">Date: <%=ses[i].date%></span>
                                 <span class="ml-5">Time: <%=ses[i].time%></span>
                                 <span class="ml-5">Location: <%=ses[i].location%></span>
+                                <span class="ml-5 text-red-700"><%=ses[i].additional%> slots left!</span>
                             </label>
                         </div>
                     </li>
@@ -85,7 +86,7 @@
                 </ul>
                 <div class="flex flex-col">
                     <a href='/createsession/<%=sport%>' class="text-green-600 p-2 underline">Create Session</a>
-                    <a href="/reports" class="text-green-600 p-2 underline">View Report</a>
+                    <a class="text-green-600 p-2 underline">View Report</a>
                 </div>
             </div>
             <br>
