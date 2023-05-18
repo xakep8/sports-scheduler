@@ -9,7 +9,7 @@
   "test": {
     "username": "postgres",
     "password": "changeme",
-    "database": "wd-sports-dev",
+    "database": "wd-sports-test",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
