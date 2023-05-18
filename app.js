@@ -217,11 +217,11 @@ app.get("/signout",connectEnsureLogin.ensureLoggedIn(),(request,response,next)=>
   });
 });
 
-app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requireAdmin ,(request,response)=>{
+app.post("/adminsession",passport.authenticate('local',{failureRedirect:'/signin/admin',failureFlash:true,}),requireAdmin ,(request,response)=>{
   response.redirect("/home");
 });
 
-app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signin',failureFlash:true,}),requirePlayer ,(request,response)=>{
+app.post("/playersession",passport.authenticate('local',{failureRedirect:'/signin/player',failureFlash:true,}),requirePlayer ,(request,response)=>{
   response.redirect("/home");
 });
 
@@ -569,6 +569,10 @@ app.post("/updatepassword",connectEnsureLogin.ensureLoggedIn(),async (request,re
     request.flash("error","New password and Re-entered password don't match");
     response.redirect("/changepassword");
   }
+});
+
+app.get("/login",(request,response)=>{
+  response.redirect("/signin");
 });
 
 module.exports =app;
