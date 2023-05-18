@@ -11,7 +11,7 @@ You can run the application locally by following the steps below in a terminal w
 
 `npm start`
 
-or you can visit the online hosted version of the application and user it there without having to run it on your computer.
+or you can visit the online hosted version of the application and use it there without having to run it on your computer.
 
 https://sports-scheduler-xxh6.onrender.com/
 
