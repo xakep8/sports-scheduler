@@ -35,4 +35,4 @@ Session Page (for admin) :
 
 # Suggestions
 
-If you have suggestions for some changes you can comtact me at `xakep.ate@gmail.com`. I am open to new features and suggestions. If you wish to make changes to this application fork the repo and make your changes.
+If you have suggestions for some changes you can contact me at `xakep.ate@gmail.com`. I am open to new features and suggestions. If you wish to make changes to this application fork the repo and make your changes.
