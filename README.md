@@ -15,6 +15,20 @@ or you can visit the online hosted version of the application and use it there w
 
 https://sports-scheduler-xxh6.onrender.com/
 
+# Screenshots
+
+Application Page:
+
+![alt text](https://github.com/xakep8/sports-scheduler/blob/main/screenshots/Screenshot%20from%202023-05-18%2011-25-22.png?raw=true)
+
+Home Page (after login) :
+
+![alt text](https://github.com/xakep8/sports-scheduler/blob/main/screenshots/Screenshot%20from%202023-05-18%2011-27-36.png?raw=true)
+
+Session Page (for admin) :
+
+![alt text](https://github.com/xakep8/sports-scheduler/blob/main/screenshots/Screenshot%20from%202023-05-18%2011-27-58.png?raw=true)
+
 # Suggestions
 
 If you have suggestions for some changes you can comtact me at `xakep.ate@gmail.com`. I am open to new features and suggestions. If you wish to make changes to this application fork the repo and make your changes.
