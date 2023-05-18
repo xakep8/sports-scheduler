@@ -93,6 +93,7 @@ app.post("/adminusers",async (request,response)=>{
       email:request.body.email,
       password: hashedPwd,
       role:"admin",
+      sessions:"",
     });
     request.login(user,(err)=>{
       if(err){
@@ -219,18 +220,20 @@ app.get("/home",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
   for(var i=0;i<sessionid.length;i++){
     if(Number(sessionid[i]).toString()!="NaN"&&sessionid[i]!=""&&sessionid[i]!=null){
       const sess=await Sports.findOne({where:{id:sessionid[i]}});
-      const t=new Date().toISOString().split("T");
-      const date=t[0];
-      console.log(date);
-      const time=t[1].substring(0,5);
-      const gtime=sess.time;
-      if(sess.date==date){
-        if(gtime>time){
+      if(sess){
+        const t=new Date().toISOString().split("T");
+        const date=t[0];
+        console.log(date);
+        const time=t[1].substring(0,5);
+        const gtime=sess.time;
+        if(sess.date==date){
+          if(gtime>time){
+            usersessions.push(sess);
+          }
+        }
+        else if(sess.date>date){
           usersessions.push(sess);
         }
-      }
-      else if(sess.date>date){
-        usersessions.push(sess);
       }
     }
   }
