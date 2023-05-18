@@ -53,7 +53,10 @@ app.use(function (request,response,next){
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.get('/',(request,response)=>{
+app.get('/',async (request,response)=>{
+  await Sportname.destroy();
+  await Sports.destroy();
+  await User.destroy();
   response.render("index",{
     title:"Sports Scheduler",
     csrfToken:request.csrfToken(),
