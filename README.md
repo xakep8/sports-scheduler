@@ -17,6 +17,10 @@ https://sports-scheduler-xxh6.onrender.com/
 
 # Screenshots
 
+You can find the demo video of the application here.
+
+https://drive.google.com/file/d/1ZD3AI611XaS32r4YeG-O3rtskE_1fK_X/view?usp=sharing
+
 Application Page:
 
 ![alt text](https://github.com/xakep8/sports-scheduler/blob/main/screenshots/Screenshot%20from%202023-05-18%2011-25-22.png?raw=true)
