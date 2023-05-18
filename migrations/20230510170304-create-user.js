@@ -32,6 +32,7 @@ module.exports = {
         allowNull:false,
         validate:{
           notNull:true,
+          len:6,
         }
       },
       role: {
