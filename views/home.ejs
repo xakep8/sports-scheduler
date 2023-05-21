@@ -11,19 +11,6 @@
     <script>
         var token=document.querySelector('meta[name="csrf-token"]').getAttribute("content");
         var role=document.querySelector('meta[name="role"]').getAttribute("content");
-        function deleteTodo(id){
-            fetch(`/todos/${id}`,{
-                method:"delete",
-                headers:{"Content-Type":"application/json"},
-                body: JSON.stringify({
-                    "_csrf":token
-                })
-            }).then((res)=>{
-                if(res.ok){
-                    window.location.reload();
-                }
-            }).catch((error)=>console.log(error));
-        }
         function control(){
             if(role!='admin'){
                 document.getElementById('admin-controls').style.display='none';

@@ -365,8 +365,13 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
         upsessions.push(sessions[i]);
       }
   }
-  const sports=await Sportname.findOne({where:{title:request.params.sport}});
-  response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:upsessions,userid:request.user.id,owner:sports.userId});
+  try{
+    const sports=await Sportname.findOne({where:{title:sport}});
+    response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:upsessions,userid:request.user.id,owner:sports.userId});
+  }
+  catch(error){
+    console.log(error);
+  }
 });
 
 app.get("/createsession/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,response)=>{
