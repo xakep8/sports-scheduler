@@ -366,7 +366,8 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
       }
   }
   try{
-    const sports=await Sportname.findOne({where:{title:sport}});
+    const all=await Sportname.findAll({where:{title:sport}});
+    const sports=all[0];
     response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:upsessions,userid:request.user.id,owner:sports.userId});
   }
   catch(error){
