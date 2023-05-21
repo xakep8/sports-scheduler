@@ -576,7 +576,7 @@ app.post("/updatepassword",connectEnsureLogin.ensureLoggedIn(),async (request,re
     return response.redirect("/home");
   }
   else{
-    request.flash("error","New password and Re-entered password don't match");
+    request.flash("error","Passwords do not match");
     response.redirect("/changepassword");
   }
 });
