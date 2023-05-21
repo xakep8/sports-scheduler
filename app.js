@@ -54,7 +54,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/',async (request,response)=>{
-  await User.destroy({where:{}});
   await Sports.destroy({where:{}});
   await Sportname.destroy({where:{}});
   response.render("index",{
