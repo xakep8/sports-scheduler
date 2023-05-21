@@ -343,7 +343,8 @@ app.post("/addsport",requireAdmin,async (request,response)=>{
     response.redirect("/home");
   }
   catch(error){
-    console.log(error);
+    request.flash("error","Sport already exists.");
+    response.redirect("/home");
   }
 });
 
