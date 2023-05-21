@@ -337,7 +337,7 @@ app.post("/addsport",requireAdmin,async (request,response)=>{
     return response.redirect("/createsport");
   }
   try{
-    Sportname.create({title:title,userId:request.user.id});
+    await Sportname.create({title:title,userId:request.user.id});
     response.redirect("/home");
   }
   catch(error){
@@ -367,6 +367,7 @@ app.get("/sport/:sport",connectEnsureLogin.ensureLoggedIn(),async (request,respo
   }
   try{
     const all=await Sportname.findAll({where:{title:sport}});
+    console.log(all);
     const sports=all[0];
     response.render("sport",{sport:sport,csrfToken:request.csrfToken(),role:role,ses:upsessions,userid:request.user.id,owner:sports.userId});
   }
@@ -450,7 +451,7 @@ app.delete("/session/:id",connectEnsureLogin.ensureLoggedIn(),async (request,res
     return response.redirect(`/session/${request.params.id}`);
   }
   try{
-    Sports.destroy({where:{id:request.params.id}});
+    await Sports.destroy({where:{id:request.params.id}});
     return response.json({Success:true});
   }
   catch(error){
